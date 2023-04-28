@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:asymetricEncryption"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="800">
+        Title="Totally safe application You can trust!" Height="350" Width="800">
     <Grid HorizontalAlignment="Center">
         <Label x:Name="titleLabel" Content="Protect your hiper-ultra important files!" HorizontalAlignment="Center" VerticalAlignment="Top" Height="55" Width="800" FontSize="36" FontFamily="Comic Sans MS" Background="#00000000" HorizontalContentAlignment="Center" Margin="0,52,0,0"/>
         <Label x:Name="soSafeLabel" Content="so safe" HorizontalAlignment="Right" Margin="0,98,31,0" VerticalAlignment="Top" FontFamily="Comic Sans MS" RenderTransformOrigin="0.5,0.5" Foreground="#FFFFEA00" FontSize="18" HorizontalContentAlignment="Right">
