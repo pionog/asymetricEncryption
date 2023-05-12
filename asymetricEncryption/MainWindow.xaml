@@ -5,35 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:asymetricEncryption"
         mc:Ignorable="d"
-        Title="Totally safe application You can trust!" Height="350" Width="800">
+        Title="Trustworthy application" Height="350" Width="800" ResizeMode="NoResize">
     <Grid HorizontalAlignment="Center">
-        <Label x:Name="titleLabel" Content="Protect your hiper-ultra important files!" HorizontalAlignment="Center" VerticalAlignment="Top" Height="55" Width="800" FontSize="36" FontFamily="Comic Sans MS" Background="#00000000" HorizontalContentAlignment="Center" Margin="0,52,0,0"/>
-        <Label x:Name="soSafeLabel" Content="so safe" HorizontalAlignment="Right" Margin="0,98,31,0" VerticalAlignment="Top" FontFamily="Comic Sans MS" RenderTransformOrigin="0.5,0.5" Foreground="#FFFFEA00" FontSize="18" HorizontalContentAlignment="Right">
-            <Label.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="-12.942"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </Label.RenderTransform>
-        </Label>
-        <Button Content="Select file" HorizontalAlignment="Left" Margin="573,149,0,0" VerticalAlignment="Top"/>
-        <RadioButton Content="Encryption" GroupName="actionType" IsChecked="True" HorizontalAlignment="Left" Margin="300,189,0,0" VerticalAlignment="Top"/>
-        <RadioButton Content="Decryption" GroupName="actionType" HorizontalAlignment="Left" Margin="436,189,0,0" VerticalAlignment="Top"/>
-        <Label Content="much protection" HorizontalAlignment="Left" Margin="20,108,0,0" VerticalAlignment="Top" FontFamily="Comic Sans MS" FontSize="18" Foreground="#FF13FF00" RenderTransformOrigin="0.5,0.5">
-            <Label.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="24.051"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </Label.RenderTransform>
-        </Label>
-        <TextBox HorizontalAlignment="Center" Margin="0,150,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="296" IsReadOnly="True" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <Label Content="File:" HorizontalAlignment="Left" Margin="210,146,0,0" VerticalAlignment="Top"/>
-        <Button Content="Do it!" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,232,0,0" FontSize="36"/>
+        <Button x:Name="selectFileButton" Content="Select file" HorizontalAlignment="Left" Margin="444,145,0,0" VerticalAlignment="Top" Click="selectFileButton_Click"/>
+        <RadioButton x:Name="encryptionButton" Content="Encryption" GroupName="actionType" IsChecked="True" HorizontalAlignment="Left" Margin="171,185,0,0" VerticalAlignment="Top" Checked="encryptionButton_Checked"/>
+        <RadioButton x:Name="decryptionButton" Content="Decryption" GroupName="actionType" HorizontalAlignment="Left" Margin="307,185,0,0" VerticalAlignment="Top" Checked="decryptionButton_Checked"/>
+        <TextBox x:Name="fileTextBox" HorizontalAlignment="Center" Margin="0,145,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="296" IsReadOnly="True" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextChanged="TextBox_TextChanged"/>
+        <Label Content="File:" HorizontalAlignment="Left" Margin="81,142,0,0" VerticalAlignment="Top"/>
+        <Button HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,232,0,0" FontSize="36" Click="doItButton_Click">
+            <Image x:Name="doItButton" Source="/img/do_it.png" Stretch="Fill" VerticalAlignment="Top" HorizontalAlignment="Center" Height="60" Width="170"/>
+        </Button>
+        <Image x:Name="Title" Margin="0,50,0,0" Source="/img/title.png" Stretch="Fill" VerticalAlignment="Top" HorizontalAlignment="Center" Height="78" Width="564"/>
 
 
     </Grid>

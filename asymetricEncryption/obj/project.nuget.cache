@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "rj01vGKoy4Pvv1m20/7UWniQFTm8bf7EkTTAePVZzwcsQ8HS6GNUSc5FDpU2u5ghXtaqKvQjPDiZ+SsV57XM1w==",
+  "dgSpecHash": "sP/GbcQE1fuLY+qVvITpzpDHKKILngZjtsmSHToWliv/gGe4BipunP1493Yr4idFZtvxRwisxrcAvnm9kwKCyA==",
   "success": true,
   "projectFilePath": "C:\\GitHub\\asymetricEncryption\\asymetricEncryption\\asymetricEncryption.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\ADMIN\\.nuget\\packages\\wpfanimatedgif\\2.0.2\\wpfanimatedgif.2.0.2.nupkg.sha512"
+  ],
   "logs": []
 }
