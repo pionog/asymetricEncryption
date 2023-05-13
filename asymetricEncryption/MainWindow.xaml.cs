@@ -69,7 +69,15 @@ namespace asymetricEncryption
             }
             else if(decryptionButton.IsChecked == true)
             {
-                //Cryptography.Crypt.decrypt(fileTextBox.Text);
+                try
+                {
+                    byte[] decryptedFile = Cryptography.Crypt.decrypt(fileTextBox.Text);
+                    File.WriteAllBytes(fileTextBox.Text + ".decrypted", decryptedFile);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
     }

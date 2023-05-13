@@ -27,7 +27,7 @@ namespace asymetricEncryption.Cryptography
                 binaryReader.Close();
             }
             catch (Exception ex) {
-                MessageBox.Show("There occured error with reading file. Chceck if it is a proper file.");
+                MessageBox.Show("There occured an error with reading the file. Chceck if it is a proper file.");
             }
             RSA rsa = RSA.Create();
 
@@ -35,15 +35,19 @@ namespace asymetricEncryption.Cryptography
 
             //how to get the private key
             var privKey = csp.ExportParameters(true);
+            var privateKey = new StringBuilder();
+            privateKey.AppendLine("-----BEGIN RSA PUBLIC KEY-----");
+            privateKey.AppendLine(Convert.ToBase64String(rsa.ExportPkcs8PrivateKey()));
+            privateKey.AppendLine("-----END RSA PRIVATE KEY-----");
+            File.WriteAllText(fileName + ".private_key.txt", privateKey.ToString());
 
             //and the public key ...
             var pubKey = csp.ExportParameters(false);
-            var pubKeyBytes = Convert.ToBase64String(pubKey.Modulus);
             var publicKey = new StringBuilder();
-            publicKey.AppendLine("-----BEGIN PUBLIC KEY-----");
-            publicKey.AppendLine(pubKeyBytes);
-            publicKey.AppendLine("-----END PUBLIC KEY-----");
-            File.WriteAllText(fileName + "public_key.txt", publicKey.ToString());
+            publicKey.AppendLine("-----BEGIN RSA PUBLIC KEY-----");
+            publicKey.AppendLine(Convert.ToBase64String(rsa.ExportRSAPublicKey()));
+            publicKey.AppendLine("-----END RSA PUBLIC KEY-----");
+            File.WriteAllText(fileName + ".public_key.txt", publicKey.ToString());
 
             byte[] encryptedBytes = null;
 
@@ -59,8 +63,12 @@ namespace asymetricEncryption.Cryptography
             }
             return encryptedBytes;
         }
-        /*public static byte[] decrypt(string fileName) {
+        public static byte[] decrypt(string fileName) {
+            string originalFileName = Path.GetFileNameWithoutExtension(fileName);
+            string filePath = Path.GetDirectoryName(fileName);
+            string file = Path.Combine(filePath, originalFileName);
             byte[] fileContent = null;
+            //reading encrypted file
             try
             {
                 System.IO.FileStream fs = new System.IO.FileStream(fileName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
@@ -74,8 +82,51 @@ namespace asymetricEncryption.Cryptography
             }
             catch (Exception ex)
             {
-                MessageBox.Show("There occured error with reading file. Chceck if it is a proper file.");
+                MessageBox.Show("There occured an error with reading the file. Chceck if it is a proper file.");
+                throw;
             }
-        }*/
+            byte[] privateKeyContent = null;
+            //reading private key
+            try
+            {
+                System.IO.FileStream fs = new System.IO.FileStream(file + ".private_key.txt", System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                System.IO.BinaryReader binaryReader = new System.IO.BinaryReader(fs);
+
+                long byteLength = new System.IO.FileInfo(file + ".private_key.txt").Length;
+                privateKeyContent = binaryReader.ReadBytes((Int32)byteLength);
+                fs.Close();
+                fs.Dispose();
+                binaryReader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("There occured an error with reading the private key. Chceck if there is a proper file with private key in the same directory.");
+                throw;
+            }
+            RSA rsa = RSA.Create();
+
+            int numberOfBytes;
+            try
+            {
+                rsa.ImportPkcs8PrivateKey(privateKeyContent, out numberOfBytes);
+            }
+            catch (Exception ex) {
+                MessageBox.Show("There occured an error with reading the private key. Chceck if there is a proper file with private key in the same directory.");
+                throw;
+            }
+            byte[] decryptedBytes = null;
+            //rsa.ImportParameters(privKey);
+            try
+            {
+                decryptedBytes = rsa.Decrypt(fileContent, System.Security.Cryptography.RSAEncryptionPadding.OaepSHA512);
+                MessageBox.Show("Decryption has been ended successfully.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Program was unable to successfully encrypt this file.");
+                throw;
+            }
+            return decryptedBytes;
+        }
     }
 }
