@@ -60,7 +60,9 @@ namespace asymetricEncryption
                 try
                 {
                     byte[] encryptedFile = Cryptography.Crypt.encrypt(fileTextBox.Text);
-                    File.WriteAllBytes(fileTextBox.Text + ".encrypted", encryptedFile);
+                    string text = Convert.ToBase64String(encryptedFile);
+                    File.WriteAllText(fileTextBox.Text + ".encrypted", text);
+                    //File.WriteAllBytes(fileTextBox.Text + ".encrypted", encryptedFile);
                 }
                 catch(Exception ex)
                 {
@@ -72,7 +74,10 @@ namespace asymetricEncryption
                 try
                 {
                     byte[] decryptedFile = Cryptography.Crypt.decrypt(fileTextBox.Text);
-                    File.WriteAllBytes(fileTextBox.Text + ".decrypted", decryptedFile);
+                    string file = System.IO.Path.GetFileNameWithoutExtension(fileTextBox.Text);
+                    string path = System.IO.Path.GetFullPath(fileTextBox.Text);
+                    string fileName = System.IO.Path.Combine(path, file);
+                    File.WriteAllBytes(fileName + ".decrypted", decryptedFile);
                 }
                 catch (Exception ex)
                 {

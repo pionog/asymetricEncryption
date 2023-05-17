@@ -69,8 +69,10 @@ namespace asymetricEncryption.Cryptography
             string filePath = Path.GetDirectoryName(fileName);
             string file = Path.Combine(filePath, originalFileName); //original file without ".enrypted"
             byte[] fileContent = null;
+            string base64 = File.ReadAllText(fileName);
+            fileContent = System.Convert.FromBase64String(base64);
             //reading encrypted file
-            try
+            /*try
             {
                 System.IO.FileStream fs = new System.IO.FileStream(fileName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
                 System.IO.BinaryReader binaryReader = new System.IO.BinaryReader(fs);
@@ -85,7 +87,7 @@ namespace asymetricEncryption.Cryptography
             {
                 MessageBox.Show("There occured an error with reading the file. Chceck if it is a proper file.");
                 throw;
-            }
+            }*/
             byte[] privateKeyContent = null;
             
             //reading private key
@@ -100,8 +102,10 @@ namespace asymetricEncryption.Cryptography
                 MessageBox.Show("There occured an error with reading the private key. Chceck if there is a proper file with private key in the same directory.");
                 throw;
             }
+            RSAParameters privKey = Decode.DecodeRSAPrivateKey(privateKeyContent);
+            
             RSA rsa = RSA.Create();
-            var csp = new RSACryptoServiceProvider(2048);
+            
 
             //int numberOfBytes;
             try
@@ -112,8 +116,11 @@ namespace asymetricEncryption.Cryptography
                 MessageBox.Show("There occured an error with reading the private key. Chceck if there is a proper file with private key in the same directory.");
                 throw;
             }
+            var csp = new RSACryptoServiceProvider(2048);
+            csp.ImportRSAPrivateKey(privateKeyContent, out _);
             byte[] decryptedBytes = null;
-            //rsa.ImportParameters(privKey);
+
+            rsa.ImportParameters(privKey);
             try
             {
                 decryptedBytes = rsa.Decrypt(fileContent, System.Security.Cryptography.RSAEncryptionPadding.OaepSHA512);
