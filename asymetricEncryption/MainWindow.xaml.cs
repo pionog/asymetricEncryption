@@ -75,9 +75,12 @@ namespace asymetricEncryption
                 {
                     byte[] decryptedFile = Cryptography.Crypt.decrypt(fileTextBox.Text);
                     string file = System.IO.Path.GetFileNameWithoutExtension(fileTextBox.Text);
-                    string path = System.IO.Path.GetFullPath(fileTextBox.Text);
-                    string fileName = System.IO.Path.Combine(path, file);
-                    File.WriteAllBytes(fileName + ".decrypted", decryptedFile);
+                    string fileWE = System.IO.Path.GetFileNameWithoutExtension(file);
+                    string extension = System.IO.Path.GetExtension(file);
+                    string fileResult = fileWE + "_result" + extension;
+                    string path = System.IO.Path.GetDirectoryName(fileTextBox.Text);
+                    string fileName = System.IO.Path.Combine(path, fileResult);
+                    File.WriteAllBytes(fileName, decryptedFile);
                 }
                 catch (Exception ex)
                 {
