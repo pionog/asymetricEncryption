@@ -30,7 +30,6 @@ namespace asymetricEncryption.Cryptography
                 MessageBox.Show("There occured an error with reading the file. Chceck if it is a proper file.");
                 throw;
             }
-            RSA rsa = RSA.Create();
 
             var csp = new RSACryptoServiceProvider(2048);
 
@@ -70,25 +69,15 @@ namespace asymetricEncryption.Cryptography
             string filePath = Path.GetDirectoryName(fileName);
             string file = Path.Combine(filePath, originalFileName); //original file without ".enrypted"
             byte[] fileContent = null;
-            string base64 = File.ReadAllText(fileName);
-            fileContent = System.Convert.FromBase64String(base64);
-            //reading encrypted file
-            /*try
+            try
             {
-                System.IO.FileStream fs = new System.IO.FileStream(fileName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-                System.IO.BinaryReader binaryReader = new System.IO.BinaryReader(fs);
-
-                long byteLength = new System.IO.FileInfo(fileName).Length;
-                fileContent = binaryReader.ReadBytes((Int32)byteLength);
-                fs.Close();
-                fs.Dispose();
-                binaryReader.Close();
+               string base64 = File.ReadAllText(fileName);
+                fileContent = System.Convert.FromBase64String(base64);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                MessageBox.Show("There occured an error with reading the file. Chceck if it is a proper file.");
-                throw;
-            }*/
+                MessageBox.Show("Program was unable to successfully encrypt this file.");
+            }
             byte[] privateKeyContent = null;
             
             //reading private key
