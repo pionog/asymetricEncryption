@@ -1,20 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Security.Cryptography;
-using System.ComponentModel;
 using System.IO;
 using System.Windows;
-using System.CodeDom;
 
 namespace asymetricEncryption.Cryptography
 {
     public class Crypt
     {
-        public static byte[] encrypt(string fileName)
+        public static void encrypt(string fileName)
         {
+            if(!File.Exists(fileName))
+            {
+                throw new FileNotFoundException("Chceck if it is a proper file.");
+            }
             byte[]? fileContent = null;
             try
             {
@@ -28,7 +27,7 @@ namespace asymetricEncryption.Cryptography
                 binaryReader.Close();
             }
             catch {
-                throw new ArgumentException("Chceck if it is a proper file.");
+                throw new ArgumentException("There occured an error while reading file.");
             }
 
             var csp = new RSACryptoServiceProvider(2048);
@@ -50,7 +49,7 @@ namespace asymetricEncryption.Cryptography
             publicKey.AppendLine("-----END RSA PUBLIC KEY-----");
             File.WriteAllText(fileName + ".public_key.txt", publicKey.ToString());
 
-            byte[] encryptedBytes = null;
+            byte[] encryptedBytes;
             try
             {
                 encryptedBytes = csp.Encrypt(fileContent, System.Security.Cryptography.RSAEncryptionPadding.Pkcs1);
@@ -59,9 +58,20 @@ namespace asymetricEncryption.Cryptography
             {
                 throw new CryptographicException("Program was unable to successfully encrypt this file.");
             }
-            return encryptedBytes;
+            string text = Convert.ToBase64String(encryptedBytes);
+            try
+            {
+                File.WriteAllText(fileName + ".encrypted", text);
+            }
+            catch {
+                throw new ArgumentException("Could not save an encrypted file");
+            }
+            return;
         }
-        public static byte[] decrypt(string fileName) { //filename = original file + ".encrypted"
+
+
+
+        public static void decrypt(string fileName) { //filename = original file + ".encrypted"
             string originalFileName = Path.GetFileNameWithoutExtension(fileName);
             string filePath = Path.GetDirectoryName(fileName);
             string file = Path.Combine(filePath, originalFileName); //original file without ".enrypted"
@@ -75,7 +85,7 @@ namespace asymetricEncryption.Cryptography
             {
                 throw new ArgumentException("Program was unable to successfully encrypt this file.");
             }
-            byte[] privateKeyContent = null;
+            byte[] privateKeyContent;
             
             //reading private key
             try
@@ -105,7 +115,19 @@ namespace asymetricEncryption.Cryptography
             {
                 throw new CryptographicException("Program was unable to successfully encrypt this file.");
             }
-            return decryptedBytes;
+
+            string fileBE = System.IO.Path.GetFileNameWithoutExtension(fileName);
+            string fileWE = System.IO.Path.GetFileNameWithoutExtension(fileBE);
+            string extension = System.IO.Path.GetExtension(file);
+            string fileResult = fileWE + "_result" + extension;
+            string path = System.IO.Path.GetDirectoryName(fileName);
+            string fileNameDecrypted = System.IO.Path.Combine(path, fileResult);
+            File.WriteAllBytes(fileNameDecrypted, decryptedBytes);
+            return;
+        }
+        public static void modify(string fileName, int whichByte) {
+
+            return;
         }
     }
 }
