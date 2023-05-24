@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using System.CodeDom;
 
 namespace asymetricEncryption.Cryptography
 {
@@ -26,9 +27,8 @@ namespace asymetricEncryption.Cryptography
                 fs.Dispose();
                 binaryReader.Close();
             }
-            catch (Exception ex) {
-                MessageBox.Show("There occured an error with reading the file. Chceck if it is a proper file.");
-                throw;
+            catch {
+                throw new ArgumentException("Chceck if it is a proper file.");
             }
 
             var csp = new RSACryptoServiceProvider(2048);
@@ -51,16 +51,13 @@ namespace asymetricEncryption.Cryptography
             File.WriteAllText(fileName + ".public_key.txt", publicKey.ToString());
 
             byte[] encryptedBytes = null;
-
-            //csp.ImportParameters(pubKey);
             try
             {
                 encryptedBytes = csp.Encrypt(fileContent, System.Security.Cryptography.RSAEncryptionPadding.Pkcs1);
-                MessageBox.Show("Encryption has been ended successfully.");
             }
-            catch(Exception ex)
+            catch
             {
-                MessageBox.Show("Program was unable to successfully encrypt this file.");
+                throw new CryptographicException("Program was unable to successfully encrypt this file.");
             }
             return encryptedBytes;
         }
@@ -74,9 +71,9 @@ namespace asymetricEncryption.Cryptography
                string base64 = File.ReadAllText(fileName);
                 fileContent = System.Convert.FromBase64String(base64);
             }
-            catch(Exception ex)
+            catch
             {
-                MessageBox.Show("Program was unable to successfully encrypt this file.");
+                throw new ArgumentException("Program was unable to successfully encrypt this file.");
             }
             byte[] privateKeyContent = null;
             
@@ -84,43 +81,29 @@ namespace asymetricEncryption.Cryptography
             try
             {
                 string[] strings = File.ReadAllLines(file + ".private_key.txt");
-                string text = strings[1]; //[0] - header, [1] - private key [2] - footer
-                privateKeyContent = Convert.FromBase64String(text);
+                try
+                {
+                    string text = strings[1]; //[0] - header, [1] - private key [2] - footer
+                    privateKeyContent = Convert.FromBase64String(text);
+                }
+                catch {
+                    throw new ArgumentNullException("File containing key was modified.");
+                }
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show("There occured an error with reading the private key. Chceck if there is a proper file with private key in the same directory.");
-                throw;
+                throw new ArgumentException("Private key is not probably in the same directory as given file.");
             }
-
-            
-            RSA rsa = RSA.Create();
-
-
-            //int numberOfBytes;
-            /*try
-            {
-                rsa.ImportRSAPrivateKey(privateKeyContent, out _);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("There occured an error with reading the private key. Chceck if there is a proper file with private key in the same directory.");
-                throw;
-            }*/
             var csp = new RSACryptoServiceProvider(2048);
             csp.ImportRSAPrivateKey(privateKeyContent, out _);
             byte[]? decryptedBytes;
-            RSAParameters privKey = Decode.DecodeRSAPrivateKey(privateKeyContent);
-            rsa.ImportParameters(privKey);
             try
             {
                 decryptedBytes = csp.Decrypt(fileContent, System.Security.Cryptography.RSAEncryptionPadding.Pkcs1);
-                MessageBox.Show("Decryption has been ended successfully.");
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show("Program was unable to successfully encrypt this file.");
-                throw;
+                throw new CryptographicException("Program was unable to successfully encrypt this file.");
             }
             return decryptedBytes;
         }

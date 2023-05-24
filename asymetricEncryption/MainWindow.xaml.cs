@@ -62,11 +62,11 @@ namespace asymetricEncryption
                     byte[] encryptedFile = Cryptography.Crypt.encrypt(fileTextBox.Text);
                     string text = Convert.ToBase64String(encryptedFile);
                     File.WriteAllText(fileTextBox.Text + ".encrypted", text);
-                    //File.WriteAllBytes(fileTextBox.Text + ".encrypted", encryptedFile);
+                    MessageBox.Show("Encryption has been ended successfully.", "Success");
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else if(decryptionButton.IsChecked == true)
@@ -81,10 +81,11 @@ namespace asymetricEncryption
                     string path = System.IO.Path.GetDirectoryName(fileTextBox.Text);
                     string fileName = System.IO.Path.Combine(path, fileResult);
                     File.WriteAllBytes(fileName, decryptedFile);
+                    MessageBox.Show("Decryption has been ended successfully.");
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }

@@ -25,7 +25,6 @@
     <Resource Include="img\title.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="screen.png" />
   </ItemGroup>
 
 </Project>
