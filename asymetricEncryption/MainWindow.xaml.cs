@@ -138,7 +138,7 @@ namespace asymetricEncryption
                 int whichByte;
                 try
                 {
-                    int.TryParse(fileTextBox.Text, out whichByte);
+                    int.TryParse(modificationTextBox.Text, out whichByte);
                 }
                 catch {
                     throw new ArgumentException("You did not provided valid number.");

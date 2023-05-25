@@ -3,6 +3,7 @@ using System.Text;
 using System.Security.Cryptography;
 using System.IO;
 using System.Windows;
+using System.Numerics;
 
 namespace asymetricEncryption.Cryptography
 {
@@ -19,7 +20,7 @@ namespace asymetricEncryption.Cryptography
             {
                 System.IO.FileStream fs = new System.IO.FileStream(fileName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
                 System.IO.BinaryReader binaryReader = new System.IO.BinaryReader(fs, Encoding.UTF8, false);
-                
+
                 long byteLength = new System.IO.FileInfo(fileName).Length;
                 fileContent = binaryReader.ReadBytes((Int32)byteLength);
                 fs.Close();
@@ -41,11 +42,9 @@ namespace asymetricEncryption.Cryptography
             File.WriteAllText(fileName + ".private_key.txt", privateKey.ToString());
 
             //and the public key ...
-            var pubKey = csp.ExportParameters(false);
             var publicKey = new StringBuilder();
             publicKey.AppendLine("-----BEGIN RSA PUBLIC KEY-----");
-            byte[] pk = csp.ExportRSAPublicKey();
-            publicKey.AppendLine(Convert.ToBase64String(pk));
+            publicKey.AppendLine(Convert.ToBase64String(csp.ExportRSAPublicKey()));
             publicKey.AppendLine("-----END RSA PUBLIC KEY-----");
             File.WriteAllText(fileName + ".public_key.txt", publicKey.ToString());
 
@@ -126,6 +125,20 @@ namespace asymetricEncryption.Cryptography
             return;
         }
         public static void modify(string fileName, int whichByte) {
+            byte[] fileContent = null;
+            string base64;
+            try
+            {
+                base64 = File.ReadAllText(fileName);
+                fileContent = System.Convert.FromBase64String(base64);
+            }
+            catch
+            {
+                throw new ArgumentException("Program was unable to successfully encrypt this file.");
+            }
+            fileContent[whichByte] = (byte)BitOperations.RotateLeft(fileContent[whichByte], 4);
+            base64 = System.Convert.ToBase64String(fileContent);
+            File.WriteAllText(fileName,base64);
 
             return;
         }
