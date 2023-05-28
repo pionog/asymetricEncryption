@@ -3,13 +3,16 @@ using System.Text;
 using System.Security.Cryptography;
 using System.IO;
 using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace asymmetricEncryption.Cryptography
 {
     public class Crypt
     {
+
         static readonly int blockSize = 256-11; //256 size of byte - 11 size of minimal padding for pkcs1
-        public static void encrypt(string fileName)
+        public static async Task encrypt(string fileName, ProgressReporter progressReporter)
         {
             if(!File.Exists(fileName))
             {
@@ -43,7 +46,7 @@ namespace asymmetricEncryption.Cryptography
             catch {
                 throw new ArgumentException("There occured an error while reading file.");
             }
-
+            await progressReporter.ReportProgress(33);
             RSACryptoServiceProvider csp = new(2048);
 
             //how to get the private key
@@ -72,6 +75,7 @@ namespace asymmetricEncryption.Cryptography
             {
                 throw new CryptographicException("Program was unable to successfully encrypt this file.");
             }
+            await progressReporter.ReportProgress(66);
             string[] blocksText = new string[howManyBlocks];
             for (int i = 0; i < howManyBlocks; i++)
             {
@@ -90,11 +94,11 @@ namespace asymmetricEncryption.Cryptography
             catch {
                 throw new ArgumentException("Could not save an encrypted file");
             }
+            await progressReporter.ReportProgress(100);
             return;
         }
 
-        public static void decrypt(string fileName) { //filename = original file + ".encrypted"
-            //tutaj zliczanie czasu
+        public static async Task decrypt(string fileName, ProgressReporter progressReporter) { //filename = original file + ".encrypted"
             string originalFileName = Path.GetFileNameWithoutExtension(fileName);
             string filePath = Path.GetDirectoryName(fileName);
             string file = Path.Combine(filePath, originalFileName); //original file without ".enrypted"
@@ -123,7 +127,7 @@ namespace asymmetricEncryption.Cryptography
             {
                 fileBlocks[i] = System.Convert.FromBase64String(lines[i]);
             }
-
+            await progressReporter.ReportProgress(20);
             byte[] privateKeyContent;
             
             //reading private key
@@ -143,6 +147,7 @@ namespace asymmetricEncryption.Cryptography
             {
                 throw new ArgumentException("Private key is not probably in the same directory as given file.");
             }
+            await progressReporter.ReportProgress(40);
             var csp = new RSACryptoServiceProvider(2048);
             csp.ImportRSAPrivateKey(privateKeyContent, out _);
             byte[][] decryptedBlocks = new byte[howManyBlocks][];
@@ -156,6 +161,7 @@ namespace asymmetricEncryption.Cryptography
             {
                 throw new CryptographicException("Program was unable to successfully encrypt this file.");
             }
+            await progressReporter.ReportProgress(80);
             string fileBE = System.IO.Path.GetFileNameWithoutExtension(fileName);
             string fileWE = System.IO.Path.GetFileNameWithoutExtension(fileBE);
             string extension = System.IO.Path.GetExtension(file);
@@ -179,6 +185,7 @@ namespace asymmetricEncryption.Cryptography
             {
                 throw new ArgumentException("There occured an error while reading file.");
             }
+            await progressReporter.ReportProgress(100);
             return;
         }
         public static void modify(string fileName, int whichByte) {

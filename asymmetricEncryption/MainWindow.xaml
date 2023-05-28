@@ -11,7 +11,8 @@
         <RadioButton x:Name="encryptionButton" Content="Encryption" GroupName="actionType" IsChecked="True" HorizontalAlignment="Left" Margin="289,185,0,0" VerticalAlignment="Top" Checked="encryptionButton_Checked"/>
         <RadioButton x:Name="decryptionButton" Content="Decryption" GroupName="actionType" HorizontalAlignment="Left" Margin="439,185,0,0" VerticalAlignment="Top" Checked="decryptionButton_Checked"/>
         <TextBox x:Name="fileTextBox" HorizontalAlignment="Center" Margin="0,145,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="400" IsReadOnly="True" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextChanged="TextBox_TextChanged"/>
-        <Label Content="File:" HorizontalAlignment="Left" Margin="130,140,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="fileLabel" Content="File:" HorizontalAlignment="Left" Margin="130,140,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="progressLabel" Content="Progress:" HorizontalAlignment="Left" Margin="130,140,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
         <Button HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,232,0,0" FontSize="36" Click="doItButton_Click">
             <Image x:Name="doItButton" Source="/img/do_it.png" Stretch="Fill" VerticalAlignment="Top" HorizontalAlignment="Center" Height="60" Width="170"/>
         </Button>
@@ -21,5 +22,8 @@
             <TextBox x:Name="modificationTextBox" HorizontalAlignment="Left" Margin="85,24,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextChanged="modificationTextBox_TextChanged"/>
             <Label Content="Change byte:" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top"/>
         </Grid>
+        <ProgressBar x:Name="progressBar" HorizontalAlignment="Center" Height="19" Margin="0,144,0,0" VerticalAlignment="Top" Width="400" Visibility="Hidden"/>
+        <Label x:Name="failLabel" Content="Fail" HorizontalAlignment="Center" Margin="0,140,0,0" VerticalAlignment="Top" Visibility="Hidden" Foreground="White"/>
+        <Label x:Name="successLabel" Content="Success" HorizontalAlignment="Center" Margin="0,140,0,0" VerticalAlignment="Top" Visibility="Hidden" Foreground="White"/>
     </Grid>
 </Window>

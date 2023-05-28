@@ -1,11 +1,13 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,11 +26,19 @@ namespace asymmetricEncryption
     /// </summary>
     public partial class MainWindow : Window
     {
+        private ProgressReporter progressReporter;
         bool encrypt = true;
         bool decrypt = false;
         public MainWindow()
         {
             InitializeComponent();
+            progressReporter = new ProgressReporter();
+            progressReporter.ProgressChanged += ProgressReporter_ProgressChanged;
+        }
+
+        private void ProgressReporter_ProgressChanged(int progress)
+        {
+            progressBar.Value = progress;
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -82,6 +92,10 @@ namespace asymmetricEncryption
 
         private void doItButton_Click(object sender, RoutedEventArgs e)
         {
+
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+
+
             if (fileTextBox.Text == null || fileTextBox.Text == "")
             {
                 MessageBox.Show("You did not select any file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -103,13 +117,37 @@ namespace asymmetricEncryption
                 }
                 try
                 {
-                    Cryptography.Crypt.encrypt(fileTextBox.Text);
-                    MessageBox.Show("Encryption has been finished successfully.", "Success");
+                    progressBar.Visibility = Visibility.Visible;
+                    fileLabel.Visibility = Visibility.Hidden;
+                    progressLabel.Visibility = Visibility.Visible;
+                    UpdateLayout();
+                    Cryptography.Crypt.encrypt(fileTextBox.Text, progressReporter);
+                    successLabel.Visibility = Visibility.Visible;
+                    watch.Stop();
+                    double elapsedMs = ((double) watch.ElapsedMilliseconds) / 1000;
+                    string text = "";
+                    if (elapsedMs < 60)
+                    {
+                        text = String.Format("Encryption has been finished successfully.\nTime elapsed: {0:N1} seconds.", elapsedMs);
+                    }
+                    else { 
+                        int minutes = (int) (elapsedMs / 60);
+                        text = String.Format("Encryption has been finished successfully.\nTime elapsed: {0} minutes and {1:N1} seconds", minutes, elapsedMs);
+                    }
+                    MessageBox.Show(text, "Success");
                 }
                 catch(Exception ex)
                 {
+                    progressBar.Foreground = Brushes.Red;
+                    failLabel.Visibility = Visibility.Visible;
                     MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    progressBar.Foreground = Brushes.Green;
                 }
+                progressBar.Visibility = Visibility.Hidden;
+                fileLabel.Visibility = Visibility.Visible;
+                progressLabel.Visibility = Visibility.Hidden;
+                successLabel.Visibility = Visibility.Hidden;
+                failLabel.Visibility = Visibility.Hidden;
             }
             else if(decryptionButton.IsChecked == true)
             {
@@ -118,15 +156,41 @@ namespace asymmetricEncryption
                     MessageBox.Show("File should have \".encrypted\" extension.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
+                progressBar.Visibility = Visibility.Visible;
+                fileLabel.Visibility = Visibility.Hidden;
+                progressLabel.Visibility = Visibility.Visible;
+                UpdateLayout();
                 try
                 {
-                    Cryptography.Crypt.decrypt(fileTextBox.Text);
-                    MessageBox.Show("Encryption has been finished successfully.", "Success");
+                    Cryptography.Crypt.decrypt(fileTextBox.Text, progressReporter);
+                    successLabel.Visibility = Visibility.Visible;
+                    watch.Stop();
+                    double elapsedMs = ((double)watch.ElapsedMilliseconds) / 1000;
+                    string text = "";
+                    if (elapsedMs < 60)
+                    {
+                        text = String.Format("Decryption has been finished successfully.\nTime elapsed: {0:N1} seconds", elapsedMs);
+                    }
+                    else
+                    {
+                        int minutes = (int)(elapsedMs / 60);
+                        text = String.Format("Decryption has been finished successfully.\nTime elapsed: {0} minutes and {1:N1} seconds", minutes, elapsedMs);
+                    }
+                    MessageBox.Show(text, "Success");
+
                 }
                 catch (Exception ex)
                 {
+                    progressBar.Foreground = Brushes.Red;
+                    failLabel.Visibility = Visibility.Visible;
                     MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    progressBar.Foreground = Brushes.Green;
                 }
+                progressBar.Visibility = Visibility.Hidden;
+                fileLabel.Visibility = Visibility.Visible;
+                progressLabel.Visibility = Visibility.Hidden;
+                successLabel.Visibility = Visibility.Hidden;
+                failLabel.Visibility = Visibility.Hidden;
             }
             else if(modificationButton.IsChecked == true)
             {
@@ -141,16 +205,28 @@ namespace asymmetricEncryption
                     int.TryParse(modificationTextBox.Text, out whichByte);
                 }
                 catch {
-                    throw new ArgumentException("You did not provided valid number.");
+                    MessageBox.Show("You did not provided valid number.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }
                 try
                 {
                     Cryptography.Crypt.modify(fileTextBox.Text, whichByte);
                 }
                 catch {
-                    throw new ArgumentException("Could not modify file.");
+                    MessageBox.Show("Could not modify file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }
             }
+        }
+
+        private void worker_ProgressChanged(object? sender, ProgressChangedEventArgs e)
+        {
+            progressBar.Value = e.ProgressPercentage;
+        }
+
+        private void worker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            progressBar.Value = 100;
         }
 
         private void modificationTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -158,6 +234,9 @@ namespace asymmetricEncryption
 
         }
 
-        
+        private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
+        }
     }
 }
