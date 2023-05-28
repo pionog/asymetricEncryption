@@ -82,6 +82,9 @@ namespace asymmetricEncryption
 
         private void doItButton_Click(object sender, RoutedEventArgs e)
         {
+
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+
             if (fileTextBox.Text == null || fileTextBox.Text == "")
             {
                 MessageBox.Show("You did not select any file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -104,7 +107,19 @@ namespace asymmetricEncryption
                 try
                 {
                     Cryptography.Crypt.encrypt(fileTextBox.Text);
-                    MessageBox.Show("Encryption has been finished successfully.", "Success");
+                    watch.Stop();
+                    double elapsedMs = ((double)watch.ElapsedMilliseconds) / 1000;
+                    string text = "";
+                    if (elapsedMs < 60)
+                    {
+                        text = String.Format("Encryption has been finished successfully.\nTime elapsed: {0:N1} seconds", elapsedMs);
+                    }
+                    else
+                    {
+                        int minutes = (int)(elapsedMs / 60);
+                        text = String.Format("Encryption has been finished successfully.\nTime elapsed: {0} minutes and {1:N1} seconds", minutes, elapsedMs);
+                    }
+                    MessageBox.Show(text, "Success");
                 }
                 catch(Exception ex)
                 {
@@ -121,7 +136,19 @@ namespace asymmetricEncryption
                 try
                 {
                     Cryptography.Crypt.decrypt(fileTextBox.Text);
-                    MessageBox.Show("Encryption has been finished successfully.", "Success");
+                    watch.Stop();
+                    double elapsedMs = ((double)watch.ElapsedMilliseconds) / 1000;
+                    string text = "";
+                    if (elapsedMs < 60)
+                    {
+                        text = String.Format("Decryption has been finished successfully.\nTime elapsed: {0:N1} seconds", elapsedMs);
+                    }
+                    else
+                    {
+                        int minutes = (int)(elapsedMs / 60);
+                        text = String.Format("Decryption has been finished successfully.\nTime elapsed: {0} minutes and {1:N1} seconds", minutes, elapsedMs);
+                    }
+                    MessageBox.Show(text, "Success");
                 }
                 catch (Exception ex)
                 {
@@ -141,14 +168,16 @@ namespace asymmetricEncryption
                     int.TryParse(modificationTextBox.Text, out whichByte);
                 }
                 catch {
-                    throw new ArgumentException("You did not provided valid number.");
+                    MessageBox.Show("You did not provided valid number.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }
                 try
                 {
                     Cryptography.Crypt.modify(fileTextBox.Text, whichByte);
                 }
                 catch {
-                    throw new ArgumentException("Could not modify file.");
+                    MessageBox.Show("Could not modify file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }
             }
         }
