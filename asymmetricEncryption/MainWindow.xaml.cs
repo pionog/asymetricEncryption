@@ -112,12 +112,12 @@ namespace asymmetricEncryption
                     string text = "";
                     if (elapsedMs < 60)
                     {
-                        text = String.Format("Encryption has been finished successfully.\nTime elapsed: {0:N1} seconds", elapsedMs);
+                        text = String.Format("Encryption has been finished successfully.\nTime: {0:N1} seconds", elapsedMs);
                     }
                     else
                     {
                         int minutes = (int)(elapsedMs / 60);
-                        text = String.Format("Encryption has been finished successfully.\nTime elapsed: {0} minutes and {1:N1} seconds", minutes, elapsedMs);
+                        text = String.Format("Encryption has been finished successfully.\nTime: {0} minutes and {1:N1} seconds", minutes, elapsedMs);
                     }
                     MessageBox.Show(text, "Success");
                 }
@@ -141,12 +141,12 @@ namespace asymmetricEncryption
                     string text = "";
                     if (elapsedMs < 60)
                     {
-                        text = String.Format("Decryption has been finished successfully.\nTime elapsed: {0:N1} seconds", elapsedMs);
+                        text = String.Format("Decryption has been finished successfully.\nTime: {0:N1} seconds", elapsedMs);
                     }
                     else
                     {
                         int minutes = (int)(elapsedMs / 60);
-                        text = String.Format("Decryption has been finished successfully.\nTime elapsed: {0} minutes and {1:N1} seconds", minutes, elapsedMs);
+                        text = String.Format("Decryption has been finished successfully.\nTime: {0} minutes and {1:N1} seconds", minutes, elapsedMs);
                     }
                     MessageBox.Show(text, "Success");
                 }
