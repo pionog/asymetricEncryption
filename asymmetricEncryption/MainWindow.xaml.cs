@@ -25,7 +25,6 @@ namespace asymmetricEncryption
     public partial class MainWindow : Window
     {
         bool encrypt = true;
-        bool decrypt = false;
         public MainWindow()
         {
             InitializeComponent();
@@ -67,13 +66,11 @@ namespace asymmetricEncryption
 
         private void decryptionButton_Checked(object sender, RoutedEventArgs e)
         {
-            decrypt= true;
             encrypt= false;
         }
 
         private void encryptionButton_Checked(object sender, RoutedEventArgs e)
         {
-            decrypt = false;
             encrypt = true;
         }
         private void modificationButton_Checked(object sender, RoutedEventArgs e)

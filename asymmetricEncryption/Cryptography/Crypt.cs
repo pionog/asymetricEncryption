@@ -3,6 +3,8 @@ using System.Text;
 using System.Security.Cryptography;
 using System.IO;
 using System.Numerics;
+using static System.Net.Mime.MediaTypeNames;
+using System.Windows.Shapes;
 
 namespace asymmetricEncryption.Cryptography
 {
@@ -66,7 +68,7 @@ namespace asymmetricEncryption.Cryptography
             metadataFile.AppendLine("-----END RSA PRIVATE KEY-----");
 
             //file extension encoded in base64
-            byte[] extension = System.Text.Encoding.UTF8.GetBytes(Path.GetExtension(fileName));
+            byte[] extension = System.Text.Encoding.UTF8.GetBytes(System.IO.Path.GetExtension(fileName));
             metadataFile.AppendLine(Convert.ToBase64String(extension)); // file extension
             
             //public key with key encoded in base64
@@ -76,9 +78,9 @@ namespace asymmetricEncryption.Cryptography
 
 
             //getting metadata file path and name and saving it on drive
-            string file = Path.GetFileNameWithoutExtension(fileName) + ".mf";
-            string path = Path.GetDirectoryName(fileName);
-            string metadata = Path.Combine(path, file);
+            string file = System.IO.Path.GetFileNameWithoutExtension(fileName) + ".mf";
+            string path = System.IO.Path.GetDirectoryName(fileName);
+            string metadata = System.IO.Path.Combine(path, file);
             File.WriteAllText(metadata, metadataFile.ToString());
 
             //new blocks for encrypted content
@@ -102,7 +104,7 @@ namespace asymmetricEncryption.Cryptography
             }
             try
             {
-                string encryptedFile = Path.Combine(path, Path.GetFileNameWithoutExtension(fileName) + ".encrypted");
+                string encryptedFile = System.IO.Path.Combine(path, System.IO.Path.GetFileNameWithoutExtension(fileName) + ".encrypted");
                 using (StreamWriter writer = File.CreateText(encryptedFile))
                 {
                     for (int i = 0; i < howManyBlocks; i++)
@@ -121,11 +123,11 @@ namespace asymmetricEncryption.Cryptography
         public static void decrypt(string fileName) { //filename = original file + ".encrypted"
 
             //removing extension from the string
-            string originalFileName = Path.GetFileNameWithoutExtension(fileName);
+            string originalFileName = System.IO.Path.GetFileNameWithoutExtension(fileName);
             //getting directory from the path
-            string directory = Path.GetDirectoryName(fileName);
+            string directory = System.IO.Path.GetDirectoryName(fileName);
             //path do metadata file
-            string pathToMetadata = Path.Combine(directory, originalFileName + ".mf");
+            string pathToMetadata = System.IO.Path.Combine(directory, originalFileName + ".mf");
             byte[] ext;
             try
             {
@@ -159,7 +161,7 @@ namespace asymmetricEncryption.Cryptography
             }
             catch
             {
-                throw new ArgumentException("Program was unable to successfully encrypt this file.");
+                throw new ArgumentException("Program was unable to successfully decrypt this file.");
             }
             string[] lines = textFile.Split("==");
             //number of "==" occurance + 1 equals the number of blocks that were encrypted
@@ -207,7 +209,7 @@ namespace asymmetricEncryption.Cryptography
             }
             catch
             {
-                throw new CryptographicException("Program was unable to successfully encrypt this file.");
+                throw new CryptographicException("Program was unable to successfully decrypt this file.");
             }
             //zapisanie pliku do postaci sprzed szyfrowania
             string fileWE = System.IO.Path.GetFileNameWithoutExtension(fileName);
@@ -245,11 +247,67 @@ namespace asymmetricEncryption.Cryptography
             }
             catch
             {
+                throw new ArgumentException("Program was unable to successfully modify this file.");
+            }
+            string textFile;
+            long howManyBlocks;
+            try
+            {
+                using (StreamReader sr = new StreamReader(fileName, Encoding.UTF8, false))
+                {
+                    textFile = sr.ReadToEnd();
+                }
+            }
+            catch
+            {
                 throw new ArgumentException("Program was unable to successfully encrypt this file.");
             }
-            fileContent[whichByte] = (byte)BitOperations.RotateLeft(fileContent[whichByte], 4);
-            base64 = System.Convert.ToBase64String(fileContent);
-            File.WriteAllText(fileName,base64);
+            string[] lines = textFile.Split("==");
+            //number of "==" occurance + 1 equals the number of blocks that were encrypted
+            howManyBlocks = lines.Length - 1;
+            for (int i = 0; i < howManyBlocks; i++)
+            {
+                lines[i] += "=="; // adding "==" characters to restore them from Split() method
+            }
+            byte[][] fileBlocks = new byte[howManyBlocks][];
+            for (int i = 0; i < howManyBlocks; i++)
+            {
+                //reading encrypted strings in base64 to byte[] array and converting them to standard byte[]
+                fileBlocks[i] = System.Convert.FromBase64String(lines[i]);
+            }
+            int lastBlockSize = fileBlocks[howManyBlocks- 1].Length; 
+            long totalSize = (howManyBlocks-1) * blockSize + lastBlockSize;
+            if (whichByte < 0 || whichByte > totalSize)
+            {
+                throw new ArgumentException("Provided byte could not be found.");
+            }
+            else {
+                int i = 1;
+                while (whichByte > blockSize * i) {
+                    i++;
+                }
+                fileBlocks[i-1][whichByte - (blockSize * (i - 1))] = (byte)BitOperations.RotateLeft(fileBlocks[i-1][whichByte - (blockSize*(i-1))], 4);
+            }
+            string[] blocksText = new string[howManyBlocks];
+            for (int i = 0; i < howManyBlocks; i++)
+            {
+                blocksText[i] = Convert.ToBase64String(fileBlocks[i]);
+            }
+            try
+            {
+                using (StreamWriter writer = File.CreateText(fileName))
+                {
+                    for (int i = 0; i < howManyBlocks; i++)
+                    {
+                        //writing metadata file
+                        writer.Write(blocksText[i]);
+                    }
+                }
+            }
+            catch
+            {
+                throw new ArgumentException("Could not save an encrypted file");
+            }
             return;
         }
     }
